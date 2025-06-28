@@ -117,7 +117,7 @@ const Booking: React.FC = () => {
             Book Your Stay
           </h1>
           <p className="text-xl text-amber-100 max-w-3xl mx-auto">
-            Reserve your comfortable accommodation at Serenity Haven Guest House
+            Reserve your comfortable accommodation at ACK Mt. Kenya Guest House
           </p>
         </div>
       </section>

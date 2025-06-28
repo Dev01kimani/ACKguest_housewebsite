@@ -58,10 +58,10 @@ const About: React.FC = () => {
       <section className="relative py-20 bg-gradient-to-r from-amber-600 to-amber-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            About Serenity Haven
+            About ACK Mt. Kenya Guest House, Nyeri
           </h1>
           <p className="text-xl text-amber-100 max-w-3xl mx-auto">
-            Discover the story behind Naivasha's most welcoming guest house
+            Discover the story behind Nyeri's most welcoming guest house
           </p>
         </div>
       </section>
@@ -76,19 +76,18 @@ const About: React.FC = () => {
               </h2>
               <div className="space-y-4 text-lg text-gray-600">
                 <p>
-                  Serenity Haven Guest House was born from a simple dream: to create a peaceful retreat 
+                  ACK Mt. Kenya Guest House, Nyeri was born from a simple dream: to create a peaceful retreat 
                   where travelers could experience the true warmth of Kenyan hospitality while exploring 
                   the breathtaking beauty of the Naivasha region.
                 </p>
                 <p>
-                  Founded in 2018 by the Kimani family, who have deep roots in the Naivasha community, 
+                  Founded in 2018 by the Kimani family, who have deep roots in the Nyeri community, 
                   our guest house combines modern comfort with traditional values. We believe that every 
                   journey should be more than just a place to sleep – it should be a home away from home.
                 </p>
                 <p>
-                  Located just minutes from Lake Naivasha and surrounded by stunning landscapes, we offer 
-                  our guests the perfect base to explore the region's natural wonders, from boat rides on 
-                  the lake to visits to nearby national parks.
+                  Located just minutes from Nyeri town and surrounded by stunning landscapes, we offer 
+                  our guests the perfect base to explore the region's natural wonders.
                 </p>
               </div>
             </div>
@@ -115,7 +114,7 @@ const About: React.FC = () => {
               Our Values
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              The principles that guide everything we do at Serenity Haven
+              The principles that guide everything we do at ACK Mt. Kenya Guest House
             </p>
           </div>
           
@@ -153,25 +152,25 @@ const About: React.FC = () => {
               </div>
               <div className="space-y-4 text-lg text-gray-600">
                 <p>
-                  Strategically located in the heart of Naivasha, we're perfectly positioned for 
+                  Strategically located in the heart of Nyeri, we're perfectly positioned for 
                   exploring the region's many attractions while maintaining a peaceful, residential feel.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-start space-x-2">
                     <span className="text-amber-600 font-bold">•</span>
-                    <span>5 minutes to Lake Naivasha boat stations</span>
+                    <span>Insert something about nyeri</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-amber-600 font-bold">•</span>
-                    <span>15 minutes to Hell's Gate National Park</span>
+                    <span>Another one</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-amber-600 font-bold">•</span>
-                    <span>10 minutes to Naivasha town center</span>
+                    <span>Another one</span>
                   </li>
                   <li className="flex items-start space-x-2">
                     <span className="text-amber-600 font-bold">•</span>
-                    <span>1 hour drive from Nairobi</span>
+                    <span>How many hours drive from nairobi</span>
                   </li>
                 </ul>
               </div>
@@ -241,7 +240,7 @@ const About: React.FC = () => {
             Experience Our Hospitality
           </h2>
           <p className="text-xl text-amber-100 mb-8">
-            Join the many satisfied guests who have made Serenity Haven their home in Naivasha
+            Join the many satisfied guests who have made ACK Mt. Kenya Guest house their home in Nyeri
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a

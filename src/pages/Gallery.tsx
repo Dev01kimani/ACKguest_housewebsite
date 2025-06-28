@@ -130,7 +130,7 @@ const Gallery: React.FC = () => {
             Photo Gallery
           </h1>
           <p className="text-xl text-amber-100 max-w-3xl mx-auto">
-            Explore our beautiful accommodations and the stunning surroundings of Naivasha
+            Explore our beautiful accommodations and the stunning surroundings of Nyeri
           </p>
         </div>
       </section>
@@ -233,7 +233,7 @@ const Gallery: React.FC = () => {
       <section className="py-16 bg-amber-600">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Experience Serenity Haven?
+            Ready to Experience ACK Mt. Kenya Guest House?
           </h2>
           <p className="text-xl text-amber-100 mb-8">
             Book your stay and create your own memories in this beautiful setting

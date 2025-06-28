@@ -143,8 +143,8 @@ const Contact: React.FC = () => {
                     <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
                     <p className="text-gray-600 mb-2">Visit us at our location</p>
                     <address className="text-gray-700 not-italic">
-                      123 Lakeside Drive<br />
-                      Naivasha, Kenya
+                      123 Drive<br />
+                      Nyeri, Kenya
                     </address>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ const Contact: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Find Us</h2>
-            <p className="text-xl text-gray-600">Located in the heart of Naivasha with easy access to major attractions</p>
+            <p className="text-xl text-gray-600">Located in the heart of Nyeri with easy access to major attractions</p>
           </div>
           
           <div className="bg-gray-200 rounded-lg overflow-hidden shadow-lg">

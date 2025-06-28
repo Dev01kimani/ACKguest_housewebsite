@@ -47,10 +47,10 @@ const Home: React.FC = () => {
         <div className="relative z-10 text-center text-white max-w-4xl px-4">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             Welcome to<br />
-            <span className="text-amber-400">Serenity Haven</span>
+            <span className="text-amber-400">ACK Mt. Kenya Guest House</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-gray-200">
-            Your peaceful retreat in the heart of Naivasha, where comfort meets nature
+            Your peaceful retreat in the heart of ACK Mt. Kenya Guest House, where comfort meets nature
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -74,7 +74,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Serenity Haven?
+              Why Choose ACK Mt. Kenya Guest house?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Experience exceptional hospitality with modern amenities in a serene setting
@@ -104,7 +104,7 @@ const Home: React.FC = () => {
                 A Home Away From Home
               </h2>
               <p className="text-lg text-gray-600 mb-6">
-                Nestled in the beautiful landscape of Naivasha, Serenity Haven Guest House offers 
+                Nestled in the beautiful landscape of Nyeri, ACK Mt. Kenya Guest House offers 
                 a perfect blend of comfort, tranquility, and convenience. Our carefully designed 
                 accommodations provide the ideal base for exploring the region's attractions.
               </p>
@@ -173,7 +173,7 @@ const Home: React.FC = () => {
             Ready for Your Perfect Getaway?
           </h2>
           <p className="text-xl text-amber-100 mb-8">
-            Book your stay at Serenity Haven and experience the best of Naivasha
+            Book your stay at ACK Mt. Kenya Guest House and experience the best of Nyeri
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
