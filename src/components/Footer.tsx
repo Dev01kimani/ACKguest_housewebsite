@@ -12,15 +12,15 @@ const Footer: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-amber-400" />
-                <span>+254 712 345 678</span>
+                <span>+254 759 750 318</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-amber-400" />
-                <span>info@serenityhaven.com</span>
+                <span>josekeam01@gmail.com.com</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-amber-400" />
-                <span>123 Lakeside Drive<br />Naivasha, Kenya</span>
+                <span>123 Drive<br />Nyeri, Kenya</span>
               </div>
             </div>
           </div>
@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Serenity Haven Guest House. All rights reserved.</p>
+          <p>&copy; 2025 ACK Mt. Kenay Guest House. All rights reserved.</p>
         </div>
       </div>
     </footer>

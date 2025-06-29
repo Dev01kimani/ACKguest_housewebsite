@@ -38,7 +38,9 @@ const Home: React.FC = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: 'url(https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop)'
+            backgroundImage: `url('/Images/ACK1.webp')`
+
+
           }}
         >
           <div className="absolute inset-0 bg-black bg-opacity-50"></div>
@@ -126,7 +128,7 @@ const Home: React.FC = () => {
             </div>
             <div className="relative">
               <img
-                src="https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop"
+                src="/Images/ACK2.webp"
                 alt="Guest house exterior"
                 className="rounded-lg shadow-lg"
               />

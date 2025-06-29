@@ -27,7 +27,7 @@ const Header: React.FC = () => {
               <Home className="h-6 w-6 text-amber-700" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">Serenity Haven</h1>
+              <h1 className="text-xl font-bold text-gray-800">ACK Mt. Kenya</h1>
               <p className="text-sm text-gray-600">Guest House</p>
             </div>
           </Link>

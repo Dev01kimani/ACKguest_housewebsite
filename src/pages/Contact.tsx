@@ -10,8 +10,6 @@ const Contact: React.FC = () => {
   const handleContactSubmit = (data: ContactData) => {
     setSubmittedData(data);
     setIsSubmitted(true);
-    
-    // Scroll to top to show success message
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -29,15 +27,10 @@ const Contact: React.FC = () => {
               <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="h-10 w-10 text-green-600" />
               </div>
-              
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                Message Sent Successfully!
-              </h1>
-              
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Message Sent Successfully!</h1>
               <p className="text-lg text-gray-600 mb-8">
                 Thank you for contacting us, {submittedData.name}! We've received your message and will get back to you within 24 hours.
               </p>
-
               <div className="bg-gray-50 p-6 rounded-lg mb-8 text-left">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Message Summary</h3>
                 <div className="space-y-2 text-sm">
@@ -46,12 +39,8 @@ const Contact: React.FC = () => {
                   {submittedData.phone && <div><span className="font-medium">Phone:</span> {submittedData.phone}</div>}
                 </div>
               </div>
-
               <div className="space-y-4 mb-8">
-                <p className="text-gray-600">
-                  Need immediate assistance? Contact us directly:
-                </p>
-                
+                <p className="text-gray-600">Need immediate assistance? Contact us directly:</p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="tel:+254712345678"
@@ -60,7 +49,6 @@ const Contact: React.FC = () => {
                     <Phone className="h-5 w-5" />
                     <span>Call Now</span>
                   </a>
-                  
                   <a
                     href="https://wa.me/254712345678?text=Hi, I just sent a message through your website"
                     target="_blank"
@@ -72,7 +60,6 @@ const Contact: React.FC = () => {
                   </a>
                 </div>
               </div>
-
               <button
                 onClick={resetForm}
                 className="text-amber-600 hover:text-amber-700 font-semibold"
@@ -91,9 +78,7 @@ const Contact: React.FC = () => {
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-r from-amber-600 to-amber-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Contact Us
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Contact Us</h1>
           <p className="text-xl text-amber-100 max-w-3xl mx-auto">
             Get in touch with our friendly team - we're here to help make your stay perfect
           </p>
@@ -104,10 +89,8 @@ const Contact: React.FC = () => {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Information */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Get In Touch</h2>
-              
               <div className="space-y-6 mb-8">
                 <div className="flex items-start space-x-4">
                   <div className="bg-amber-100 p-3 rounded-lg">
@@ -116,12 +99,11 @@ const Contact: React.FC = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
                     <p className="text-gray-600 mb-2">Call us for immediate assistance</p>
-                    <a href="tel:+254712345678" className="text-amber-600 hover:text-amber-700 font-semibold">
-                      +254 712 345 678
+                    <a href="tel:+254759750318" className="text-amber-600 hover:text-amber-700 font-semibold">
+                      +254 759 750 318
                     </a>
                   </div>
                 </div>
-
                 <div className="flex items-start space-x-4">
                   <div className="bg-amber-100 p-3 rounded-lg">
                     <Mail className="h-6 w-6 text-amber-600" />
@@ -129,12 +111,11 @@ const Contact: React.FC = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                     <p className="text-gray-600 mb-2">Send us a message anytime</p>
-                    <a href="mailto:info@serenityhaven.com" className="text-amber-600 hover:text-amber-700 font-semibold">
-                      info@serenityhaven.com
+                    <a href="mailto:josekeam01@gmail.com" className="text-amber-600 hover:text-amber-700 font-semibold">
+                      josekeam01@gmail.com
                     </a>
                   </div>
                 </div>
-
                 <div className="flex items-start space-x-4">
                   <div className="bg-amber-100 p-3 rounded-lg">
                     <MapPin className="h-6 w-6 text-amber-600" />
@@ -143,12 +124,11 @@ const Contact: React.FC = () => {
                     <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
                     <p className="text-gray-600 mb-2">Visit us at our location</p>
                     <address className="text-gray-700 not-italic">
-                      123 Drive<br />
+                      ACK Mt. Kenya Guest House<br />
                       Nyeri, Kenya
                     </address>
                   </div>
                 </div>
-
                 <div className="flex items-start space-x-4">
                   <div className="bg-amber-100 p-3 rounded-lg">
                     <Clock className="h-6 w-6 text-amber-600" />
@@ -171,7 +151,7 @@ const Contact: React.FC = () => {
                   Get instant responses to your questions via WhatsApp
                 </p>
                 <a
-                  href="https://wa.me/254712345678?text=Hi, I have a question about Serenity Haven Guest House"
+                  href="https://wa.me/254712345678?text=Hi, I have a question about ACK Mt. Kenya Guest House"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
@@ -200,35 +180,35 @@ const Contact: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Find Us</h2>
             <p className="text-xl text-gray-600">Located in the heart of Nyeri with easy access to major attractions</p>
           </div>
-          
+
           <div className="bg-gray-200 rounded-lg overflow-hidden shadow-lg">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15958.794948207747!2d36.43073!3d-0.72074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182857f0d7b1f5b1%3A0x3a8b8e5b8e5b8e5b!2sNaivasha%2C%20Kenya!5e0!3m2!1sen!2sus!4v1650000000000!5m2!1sen!2sus"
-              width="100%"
-              height="400"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5158.573778844751!2d36.94111547600069!3d-0.41700103529597493!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x18285de01f6ca12b%3A0x31b86b9743836a35!2sACK%20Mt.%20Kenya%20Guest%20House%2C%20Nyeri!5e1!3m2!1sen!2ske!4v1751188841074!5m2!1sen!2ske"
+              width="600%"
+              height="450"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Serenity Haven Guest House Location"
+              title="ACK Mt. Kenya Guest House Location"
             />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <MapPin className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-              <h3 className="font-semibold text-gray-900">Lake Naivasha</h3>
+              <h3 className="font-semibold text-gray-900">Nyeri Town</h3>
               <p className="text-gray-600 text-sm">5 minutes drive</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <MapPin className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-              <h3 className="font-semibold text-gray-900">Hell's Gate National Park</h3>
-              <p className="text-gray-600 text-sm">15 minutes drive</p>
+              <h3 className="font-semibold text-gray-900">Nyeri Golf Club</h3>
+              <p className="text-gray-600 text-sm">2 minutes drive</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <MapPin className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-              <h3 className="font-semibold text-gray-900">Naivasha Town</h3>
-              <p className="text-gray-600 text-sm">10 minutes drive</p>
+              <h3 className="font-semibold text-gray-900">White Rhino Hotel</h3>
+              <p className="text-gray-600 text-sm">3 minutes drive</p>
             </div>
           </div>
         </div>
