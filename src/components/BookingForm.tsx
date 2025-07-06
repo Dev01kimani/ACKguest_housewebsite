@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, Users, MessageCircle } from 'lucide-react';
+import { Calendar, Users, MessageCircle, AlertCircle } from 'lucide-react';
+import { useRooms } from '../hooks/useRooms';
+import { useBookings } from '../hooks/useBookings';
 import type { BookingData } from '../utils/types';
 
 interface BookingFormProps {
@@ -20,13 +22,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
   });
 
   const [errors, setErrors] = useState<Partial<BookingData>>({});
-
-  const roomTypes = [
-    { id: '1', name: 'Standard Single Room', price: 3500 },
-    { id: '2', name: 'Deluxe Double Room', price: 5500 },
-    { id: '3', name: 'Family Suite', price: 8500 },
-    { id: '4', name: 'Executive Room', price: 7500 }
-  ];
+  const { rooms, loading: roomsLoading } = useRooms(formData.checkIn, formData.checkOut);
+  const { createBooking, loading: bookingLoading, error: bookingError } = useBookings();
 
   const validateForm = (): boolean => {
     const newErrors: Partial<BookingData> = {};
@@ -66,14 +63,23 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
       }
     }
 
+    // Check if selected room is available
+    const selectedRoomData = rooms.find(room => room.id === formData.roomType);
+    if (selectedRoomData && !selectedRoomData.available) {
+      newErrors.roomType = 'Selected room is not available for these dates';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData);
+      const success = await createBooking(formData);
+      if (success) {
+        onSubmit(formData);
+      }
     }
   };
 
@@ -99,7 +105,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
 
   const calculateTotal = () => {
     const nights = calculateNights();
-    const selectedRoomData = roomTypes.find(room => room.id === formData.roomType);
+    const selectedRoomData = rooms.find(room => room.id === formData.roomType);
     if (nights > 0 && selectedRoomData) {
       return nights * selectedRoomData.price;
     }
@@ -120,8 +126,27 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
     return getMinDate();
   };
 
+  if (roomsLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+        <span className="ml-2 text-gray-600">Loading rooms...</span>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {bookingError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
+          <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
+          <div>
+            <h4 className="text-red-800 font-medium">Booking Error</h4>
+            <p className="text-red-700 text-sm">{bookingError}</p>
+          </div>
+        </div>
+      )}
+
       {/* Personal Information */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
@@ -259,9 +284,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
               }`}
             >
               <option value="">Select a room type</option>
-              {roomTypes.map(room => (
-                <option key={room.id} value={room.id}>
-                  {room.name} - KSh {room.price.toLocaleString()}/night
+              {rooms.map(room => (
+                <option key={room.id} value={room.id} disabled={!room.available}>
+                  {room.name} - KSh {room.price.toLocaleString()}/night {!room.available ? '(Not Available)' : ''}
                 </option>
               ))}
             </select>
@@ -297,11 +322,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
             </div>
             <div className="flex justify-between">
               <span>Room:</span>
-              <span>{roomTypes.find(r => r.id === formData.roomType)?.name}</span>
+              <span>{rooms.find(r => r.id === formData.roomType)?.name}</span>
             </div>
             <div className="flex justify-between">
               <span>Rate per night:</span>
-              <span>KSh {roomTypes.find(r => r.id === formData.roomType)?.price.toLocaleString()}</span>
+              <span>KSh {rooms.find(r => r.id === formData.roomType)?.price.toLocaleString()}</span>
             </div>
             <hr className="border-amber-300" />
             <div className="flex justify-between font-semibold text-lg">
@@ -316,13 +341,21 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
       <div className="flex flex-col sm:flex-row gap-4">
         <button
           type="submit"
-          className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
+          disabled={bookingLoading}
+          className="flex-1 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
         >
-          <span>Submit Booking Request</span>
+          {bookingLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span>Processing...</span>
+            </>
+          ) : (
+            <span>Submit Booking Request</span>
+          )}
         </button>
         
         <a
-          href={`https://wa.me/254712345678?text=Hi, I'd like to make a booking:%0A%0AName: ${formData.name}%0ACheck-in: ${formData.checkIn}%0ACheck-out: ${formData.checkOut}%0AGuests: ${formData.guests}%0ARoom: ${roomTypes.find(r => r.id === formData.roomType)?.name}`}
+          href={`https://wa.me/254712345678?text=Hi, I'd like to make a booking:%0A%0AName: ${formData.name}%0ACheck-in: ${formData.checkIn}%0ACheck-out: ${formData.checkOut}%0AGuests: ${formData.guests}%0ARoom: ${rooms.find(r => r.id === formData.roomType)?.name}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"

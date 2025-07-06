@@ -1,53 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Wifi, Coffee, Car, Tv, Bath, CheckCircle } from 'lucide-react';
-import type { Room } from '../utils/types';
+import { Users, Wifi, Coffee, Car, Tv, Bath, CheckCircle, Calendar, AlertCircle } from 'lucide-react';
+import { useRooms } from '../hooks/useRooms';
+import type { RoomWithAvailability } from '../hooks/useRooms';
 
 const Rooms: React.FC = () => {
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-
-  const rooms: Room[] = [
-    {
-      id: '1',
-      name: 'Standard Single Room',
-      description: 'Cozy and comfortable single room perfect for solo travelers',
-      price: 3500,
-      image: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      amenities: ['Free Wi-Fi', 'Private Bathroom', 'TV', 'Desk', 'Wardrobe'],
-      capacity: 1,
-      available: true
-    },
-    {
-      id: '2',
-      name: 'Deluxe Double Room',
-      description: 'Spacious double room with modern amenities and garden view',
-      price: 5500,
-      image: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      amenities: ['Free Wi-Fi', 'Private Bathroom', 'TV', 'Mini Fridge', 'Balcony', 'Work Desk'],
-      capacity: 2,
-      available: true
-    },
-    {
-      id: '3',
-      name: 'Family Suite',
-      description: 'Perfect for families with separate sleeping areas and living space',
-      price: 8500,
-      image: 'https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      amenities: ['Free Wi-Fi', 'Private Bathroom', 'TV', 'Mini Fridge', 'Seating Area', 'Kitchenette'],
-      capacity: 4,
-      available: true
-    },
-    {
-      id: '4',
-      name: 'Executive Room',
-      description: 'Premium room with lake view and enhanced amenities',
-      price: 7500,
-      image: 'https://images.pexels.com/photos/1428348/pexels-photo-1428348.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-      amenities: ['Free Wi-Fi', 'Private Bathroom', 'TV', 'Mini Fridge', 'Lake View', 'Work Desk', 'Coffee Machine'],
-      capacity: 2,
-      available: true
-    }
-  ];
+  const [selectedRoom, setSelectedRoom] = useState<RoomWithAvailability | null>(null);
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
+  
+  const { rooms, loading, error } = useRooms(checkIn, checkOut);
 
   const amenityIcons: { [key: string]: React.ComponentType<any> } = {
     'Free Wi-Fi': Wifi,
@@ -56,6 +18,48 @@ const Rooms: React.FC = () => {
     'Mini Fridge': Coffee,
     'Coffee Machine': Coffee,
   };
+
+  const getMinDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
+  const getMinCheckoutDate = () => {
+    if (checkIn) {
+      const checkInDate = new Date(checkIn);
+      checkInDate.setDate(checkInDate.getDate() + 1);
+      return checkInDate.toISOString().split('T')[0];
+    }
+    return getMinDate();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading rooms...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600 mb-4">Error loading rooms: {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -71,6 +75,62 @@ const Rooms: React.FC = () => {
         </div>
       </section>
 
+      {/* Date Selection */}
+      <section className="py-8 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <Calendar className="h-5 w-5 mr-2" />
+              Check Availability
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div>
+                <label htmlFor="checkIn" className="block text-sm font-medium text-gray-700 mb-1">
+                  Check-in Date
+                </label>
+                <input
+                  type="date"
+                  id="checkIn"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  min={getMinDate()}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="checkOut" className="block text-sm font-medium text-gray-700 mb-1">
+                  Check-out Date
+                </label>
+                <input
+                  type="date"
+                  id="checkOut"
+                  value={checkOut}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  min={getMinCheckoutDate()}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <button
+                  onClick={() => {
+                    setCheckIn('');
+                    setCheckOut('');
+                  }}
+                  className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-md font-medium transition-colors"
+                >
+                  Clear Dates
+                </button>
+              </div>
+            </div>
+            {checkIn && checkOut && (
+              <p className="mt-4 text-sm text-gray-600">
+                Showing availability for {new Date(checkIn).toLocaleDateString()} - {new Date(checkOut).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Rooms Grid */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -79,15 +139,17 @@ const Rooms: React.FC = () => {
               <div key={room.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                 <div className="relative">
                   <img
-                    src={room.image}
+                    src={room.image_url || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'}
                     alt={room.name}
                     className="w-full h-64 object-cover"
                   />
-                  {room.available && (
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                      Available
-                    </div>
-                  )}
+                  <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${
+                    room.available 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-red-500 text-white'
+                  }`}>
+                    {room.available ? 'Available' : 'Booked'}
+                  </div>
                 </div>
                 
                 <div className="p-6">
@@ -133,12 +195,21 @@ const Rooms: React.FC = () => {
                     >
                       View Details
                     </button>
-                    <Link
-                      to={`/booking?room=${room.id}`}
-                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-semibold text-center transition-colors"
-                    >
-                      Book Now
-                    </Link>
+                    {room.available ? (
+                      <Link
+                        to={`/booking?room=${room.id}`}
+                        className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-semibold text-center transition-colors"
+                      >
+                        Book Now
+                      </Link>
+                    ) : (
+                      <button
+                        disabled
+                        className="flex-1 bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-semibold cursor-not-allowed"
+                      >
+                        Not Available
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -153,7 +224,7 @@ const Rooms: React.FC = () => {
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="relative">
               <img
-                src={selectedRoom.image}
+                src={selectedRoom.image_url || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'}
                 alt={selectedRoom.name}
                 className="w-full h-64 object-cover"
               />
@@ -163,6 +234,13 @@ const Rooms: React.FC = () => {
               >
                 ×
               </button>
+              <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${
+                selectedRoom.available 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-red-500 text-white'
+              }`}>
+                {selectedRoom.available ? 'Available' : 'Booked'}
+              </div>
             </div>
             
             <div className="p-6">
@@ -194,13 +272,22 @@ const Rooms: React.FC = () => {
                 >
                   Close
                 </button>
-                <Link
-                  to={`/booking?room=${selectedRoom.id}`}
-                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-semibold text-center transition-colors"
-                  onClick={() => setSelectedRoom(null)}
-                >
-                  Book This Room
-                </Link>
+                {selectedRoom.available ? (
+                  <Link
+                    to={`/booking?room=${selectedRoom.id}`}
+                    className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-semibold text-center transition-colors"
+                    onClick={() => setSelectedRoom(null)}
+                  >
+                    Book This Room
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    className="flex-1 bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-semibold cursor-not-allowed"
+                  >
+                    Not Available
+                  </button>
+                )}
               </div>
             </div>
           </div>
