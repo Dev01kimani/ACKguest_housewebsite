@@ -18,7 +18,70 @@ export const useRooms = (checkIn?: string, checkOut?: string) => {
       setLoading(true);
       setError(null);
 
-      // Fetch all rooms
+      // Check if we have valid Supabase configuration
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('placeholder') || supabaseKey.includes('placeholder')) {
+        console.warn('Using fallback room data - Supabase not configured');
+        
+        // Use fallback data when Supabase is not configured
+        const fallbackRooms: RoomWithAvailability[] = [
+          {
+            id: '1',
+            name: 'Standard Single Room',
+            description: 'Cozy and comfortable single room perfect for solo travelers',
+            price: 3500,
+            capacity: 1,
+            amenities: ['Free Wi-Fi', 'Private Bathroom', 'TV', 'Desk', 'Wardrobe'],
+            image_url: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            available: true
+          },
+          {
+            id: '2',
+            name: 'Deluxe Double Room',
+            description: 'Spacious double room with modern amenities and garden view',
+            price: 5500,
+            capacity: 2,
+            amenities: ['Free Wi-Fi', 'Private Bathroom', 'TV', 'Mini Fridge', 'Balcony', 'Work Desk'],
+            image_url: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            available: true
+          },
+          {
+            id: '3',
+            name: 'Family Suite',
+            description: 'Perfect for families with separate sleeping areas and living space',
+            price: 8500,
+            capacity: 4,
+            amenities: ['Free Wi-Fi', 'Private Bathroom', 'TV', 'Mini Fridge', 'Seating Area', 'Kitchenette'],
+            image_url: 'https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            available: true
+          },
+          {
+            id: '4',
+            name: 'Executive Room',
+            description: 'Premium room with lake view and enhanced amenities',
+            price: 7500,
+            capacity: 2,
+            amenities: ['Free Wi-Fi', 'Private Bathroom', 'TV', 'Mini Fridge', 'Lake View', 'Work Desk', 'Coffee Machine'],
+            image_url: 'https://images.pexels.com/photos/1428348/pexels-photo-1428348.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            available: true
+          }
+        ];
+        
+        setRooms(fallbackRooms);
+        return;
+      }
+
+      // Try to fetch from Supabase
       const { data: roomsData, error: roomsError } = await supabase
         .from('rooms')
         .select('*')
