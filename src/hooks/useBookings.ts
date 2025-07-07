@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, testSupabaseConnection } from '../lib/supabase';
 import type { Database } from '../lib/supabase';
 import type { BookingData } from '../utils/types';
 
@@ -9,34 +9,19 @@ export const useBookings = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isSupabaseConfigured = (): boolean => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    return !!(supabaseUrl && 
-             supabaseKey && 
-             !supabaseUrl.includes('placeholder') && 
-             !supabaseKey.includes('placeholder') &&
-             supabaseUrl !== 'your_supabase_project_url' &&
-             supabaseKey !== 'your_supabase_anon_key');
-  };
-
   const createBooking = async (bookingData: BookingData): Promise<boolean> => {
     try {
       setLoading(true);
       setError(null);
 
-      // If Supabase is not configured, simulate successful booking
-      if (!isSupabaseConfigured()) {
-        console.log('Simulating booking creation (Supabase not configured):', bookingData);
+      // Test Supabase connection
+      const connectionTest = await testSupabaseConnection();
+      
+      if (!connectionTest) {
+        console.log('Supabase not available, simulating booking creation:', bookingData);
         
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // In a real scenario without database, you might:
-        // 1. Send email notification
-        // 2. Store in localStorage for demo purposes
-        // 3. Send to a webhook or external service
         
         // Store booking in localStorage for demo
         const existingBookings = JSON.parse(localStorage.getItem('demo_bookings') || '[]');
@@ -57,6 +42,7 @@ export const useBookings = () => {
       console.log('Creating booking with Supabase...');
 
       // First check if room is available
+      console.log('Checking room availability...');
       const { data: isAvailable, error: availabilityError } = await supabase
         .rpc('check_room_availability', {
           room_id_param: bookingData.roomType,
@@ -65,12 +51,15 @@ export const useBookings = () => {
         });
 
       if (availabilityError) {
-        throw new Error('Failed to check room availability');
+        console.error('Availability check error:', availabilityError);
+        throw new Error(`Failed to check room availability: ${availabilityError.message}`);
       }
 
       if (!isAvailable) {
         throw new Error('Room is not available for the selected dates');
       }
+
+      console.log('Room is available, proceeding with booking...');
 
       // Get room details to calculate total amount
       const { data: roomData, error: roomError } = await supabase
@@ -80,7 +69,8 @@ export const useBookings = () => {
         .single();
 
       if (roomError || !roomData) {
-        throw new Error('Failed to get room details');
+        console.error('Room fetch error:', roomError);
+        throw new Error(`Failed to get room details: ${roomError?.message || 'Room not found'}`);
       }
 
       // Calculate total amount
@@ -88,6 +78,8 @@ export const useBookings = () => {
       const checkOutDate = new Date(bookingData.checkOut);
       const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 3600 * 24));
       const totalAmount = nights * roomData.price;
+
+      console.log(`Calculated total: ${nights} nights × KSh ${roomData.price} = KSh ${totalAmount}`);
 
       // Create booking
       const bookingInsert: BookingInsert = {
@@ -103,12 +95,15 @@ export const useBookings = () => {
         status: 'pending'
       };
 
+      console.log('Inserting booking:', bookingInsert);
+
       const { error: insertError } = await supabase
         .from('bookings')
         .insert(bookingInsert);
 
       if (insertError) {
-        throw insertError;
+        console.error('Booking insert error:', insertError);
+        throw new Error(`Failed to create booking: ${insertError.message}`);
       }
 
       console.log('Booking created successfully in Supabase');
@@ -127,8 +122,10 @@ export const useBookings = () => {
       setLoading(true);
       setError(null);
 
-      // If Supabase is not configured, return demo bookings
-      if (!isSupabaseConfigured()) {
+      // Test Supabase connection
+      const connectionTest = await testSupabaseConnection();
+      
+      if (!connectionTest) {
         console.log('Getting demo bookings from localStorage...');
         const demoBookings = JSON.parse(localStorage.getItem('demo_bookings') || '[]');
         
@@ -157,7 +154,10 @@ export const useBookings = () => {
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error('Bookings fetch error:', error);
+        throw new Error(`Failed to fetch bookings: ${error.message}`);
+      }
 
       return data;
     } catch (err) {

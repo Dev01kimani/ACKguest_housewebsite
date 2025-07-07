@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, testSupabaseConnection } from '../lib/supabase';
 import type { Database } from '../lib/supabase';
 
 type Room = Database['public']['Tables']['rooms']['Row'];
@@ -71,46 +71,34 @@ export const useRooms = (checkIn?: string, checkOut?: string) => {
       setLoading(true);
       setError(null);
 
-      // Check if we have valid Supabase configuration
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-      console.log('Supabase URL:', supabaseUrl);
-      console.log('Supabase Key exists:', !!supabaseKey);
-
-      // Use fallback data if Supabase is not properly configured
-      if (!supabaseUrl || !supabaseKey || 
-          supabaseUrl.includes('placeholder') || 
-          supabaseKey.includes('placeholder') ||
-          supabaseUrl === 'your_supabase_project_url' ||
-          supabaseKey === 'your_supabase_anon_key') {
-        
-        console.warn('Using fallback room data - Supabase not configured properly');
+      // Test Supabase connection first
+      const connectionTest = await testSupabaseConnection();
+      
+      if (!connectionTest) {
+        console.warn('Supabase connection failed, using fallback data');
         setRooms(getFallbackRooms());
         return;
       }
 
-      // Try to fetch from Supabase
-      console.log('Attempting to fetch rooms from Supabase...');
+      // Fetch rooms from Supabase
+      console.log('Fetching rooms from Supabase...');
       const { data: roomsData, error: roomsError } = await supabase
         .from('rooms')
         .select('*')
         .order('price');
 
       if (roomsError) {
-        console.error('Supabase error:', roomsError);
-        console.warn('Falling back to static room data due to Supabase error');
-        setRooms(getFallbackRooms());
-        return;
+        console.error('Supabase rooms query error:', roomsError);
+        throw new Error(`Failed to fetch rooms: ${roomsError.message}`);
       }
 
       if (!roomsData || roomsData.length === 0) {
-        console.warn('No rooms data received from Supabase, using fallback');
+        console.warn('No rooms found in database, using fallback data');
         setRooms(getFallbackRooms());
         return;
       }
 
-      console.log('Successfully fetched rooms from Supabase:', roomsData.length);
+      console.log(`Successfully fetched ${roomsData.length} rooms from Supabase`);
 
       // Check availability for each room if dates are provided
       const roomsWithAvailability: RoomWithAvailability[] = [];
@@ -120,6 +108,7 @@ export const useRooms = (checkIn?: string, checkOut?: string) => {
 
         if (checkIn && checkOut) {
           try {
+            console.log(`Checking availability for room ${room.id}...`);
             const { data: availabilityData, error: availabilityError } = await supabase
               .rpc('check_room_availability', {
                 room_id_param: room.id,
@@ -128,11 +117,12 @@ export const useRooms = (checkIn?: string, checkOut?: string) => {
               });
 
             if (availabilityError) {
-              console.error('Availability check error:', availabilityError);
+              console.error('Availability check error for room', room.id, ':', availabilityError);
               // Default to available if check fails
               available = true;
             } else {
-              available = availabilityData || false;
+              available = availabilityData === true;
+              console.log(`Room ${room.id} availability:`, available);
             }
           } catch (err) {
             console.error('Error checking availability for room:', room.id, err);
@@ -149,7 +139,11 @@ export const useRooms = (checkIn?: string, checkOut?: string) => {
 
       setRooms(roomsWithAvailability);
     } catch (err) {
-      console.error('Error fetching rooms:', err);
+      console.error('Error in fetchRooms:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch rooms';
+      setError(errorMessage);
+      
+      // Use fallback data on error
       console.warn('Using fallback room data due to error');
       setRooms(getFallbackRooms());
     } finally {

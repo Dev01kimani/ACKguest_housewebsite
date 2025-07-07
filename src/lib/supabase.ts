@@ -3,20 +3,32 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Fallback for development - remove in production
-const defaultUrl = 'https://placeholder.supabase.co';
-const defaultKey = 'placeholder-key';
-
-// Use fallback values if environment variables are not set
-const finalUrl = supabaseUrl || defaultUrl;
-const finalKey = supabaseAnonKey || defaultKey;
-
 console.log('Supabase Configuration:');
-console.log('- URL:', finalUrl);
-console.log('- Key exists:', !!finalKey);
-console.log('- Using fallback:', !supabaseUrl || !supabaseAnonKey);
+console.log('- URL:', supabaseUrl);
+console.log('- Key exists:', !!supabaseAnonKey);
 
-export const supabase = createClient(finalUrl, finalKey);
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables');
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Test connection function
+export const testSupabaseConnection = async () => {
+  try {
+    const { data, error } = await supabase.from('rooms').select('count').limit(1);
+    if (error) {
+      console.error('Supabase connection test failed:', error);
+      return false;
+    }
+    console.log('Supabase connection test successful');
+    return true;
+  } catch (err) {
+    console.error('Supabase connection test error:', err);
+    return false;
+  }
+};
 
 export type Database = {
   public: {
