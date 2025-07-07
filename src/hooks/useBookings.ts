@@ -9,10 +9,52 @@ export const useBookings = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const isSupabaseConfigured = (): boolean => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    return !!(supabaseUrl && 
+             supabaseKey && 
+             !supabaseUrl.includes('placeholder') && 
+             !supabaseKey.includes('placeholder') &&
+             supabaseUrl !== 'your_supabase_project_url' &&
+             supabaseKey !== 'your_supabase_anon_key');
+  };
+
   const createBooking = async (bookingData: BookingData): Promise<boolean> => {
     try {
       setLoading(true);
       setError(null);
+
+      // If Supabase is not configured, simulate successful booking
+      if (!isSupabaseConfigured()) {
+        console.log('Simulating booking creation (Supabase not configured):', bookingData);
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // In a real scenario without database, you might:
+        // 1. Send email notification
+        // 2. Store in localStorage for demo purposes
+        // 3. Send to a webhook or external service
+        
+        // Store booking in localStorage for demo
+        const existingBookings = JSON.parse(localStorage.getItem('demo_bookings') || '[]');
+        const newBooking = {
+          id: Date.now().toString(),
+          ...bookingData,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        };
+        existingBookings.push(newBooking);
+        localStorage.setItem('demo_bookings', JSON.stringify(existingBookings));
+        
+        console.log('Demo booking stored locally:', newBooking);
+        return true;
+      }
+
+      // Real Supabase booking logic
+      console.log('Creating booking with Supabase...');
 
       // First check if room is available
       const { data: isAvailable, error: availabilityError } = await supabase
@@ -69,6 +111,7 @@ export const useBookings = () => {
         throw insertError;
       }
 
+      console.log('Booking created successfully in Supabase');
       return true;
     } catch (err) {
       console.error('Error creating booking:', err);
@@ -84,6 +127,19 @@ export const useBookings = () => {
       setLoading(true);
       setError(null);
 
+      // If Supabase is not configured, return demo bookings
+      if (!isSupabaseConfigured()) {
+        console.log('Getting demo bookings from localStorage...');
+        const demoBookings = JSON.parse(localStorage.getItem('demo_bookings') || '[]');
+        
+        if (roomId) {
+          return demoBookings.filter((booking: any) => booking.roomType === roomId);
+        }
+        
+        return demoBookings;
+      }
+
+      // Real Supabase query
       let query = supabase
         .from('bookings')
         .select(`

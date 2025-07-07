@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Users, MessageCircle, AlertCircle } from 'lucide-react';
+import { Calendar, Users, MessageCircle, AlertCircle, CheckCircle } from 'lucide-react';
 import { useRooms } from '../hooks/useRooms';
 import { useBookings } from '../hooks/useBookings';
 import type { BookingData } from '../utils/types';
@@ -24,6 +24,19 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
   const [errors, setErrors] = useState<Partial<BookingData>>({});
   const { rooms, loading: roomsLoading } = useRooms(formData.checkIn, formData.checkOut);
   const { createBooking, loading: bookingLoading, error: bookingError } = useBookings();
+
+  // Check if we're using demo mode (no Supabase)
+  const isDemoMode = (): boolean => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    return !(supabaseUrl && 
+             supabaseKey && 
+             !supabaseUrl.includes('placeholder') && 
+             !supabaseKey.includes('placeholder') &&
+             supabaseUrl !== 'your_supabase_project_url' &&
+             supabaseKey !== 'your_supabase_anon_key');
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<BookingData> = {};
@@ -63,10 +76,13 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
       }
     }
 
-    // Check if selected room is available
-    const selectedRoomData = rooms.find(room => room.id === formData.roomType);
-    if (selectedRoomData && !selectedRoomData.available) {
-      newErrors.roomType = 'Selected room is not available for these dates';
+    // In demo mode, all rooms are available
+    if (!isDemoMode()) {
+      // Check if selected room is available (only in real Supabase mode)
+      const selectedRoomData = rooms.find(room => room.id === formData.roomType);
+      if (selectedRoomData && !selectedRoomData.available) {
+        newErrors.roomType = 'Selected room is not available for these dates';
+      }
     }
 
     setErrors(newErrors);
@@ -137,6 +153,20 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Demo Mode Notice */}
+      {isDemoMode() && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start space-x-3">
+          <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5" />
+          <div>
+            <h4 className="text-blue-800 font-medium">Demo Mode</h4>
+            <p className="text-blue-700 text-sm">
+              This is a demonstration. Your booking will be simulated and stored locally. 
+              In production, this would connect to a real database.
+            </p>
+          </div>
+        </div>
+      )}
+
       {bookingError && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
           <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
@@ -285,8 +315,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
             >
               <option value="">Select a room type</option>
               {rooms.map(room => (
-                <option key={room.id} value={room.id} disabled={!room.available}>
-                  {room.name} - KSh {room.price.toLocaleString()}/night {!room.available ? '(Not Available)' : ''}
+                <option key={room.id} value={room.id} disabled={!isDemoMode() && !room.available}>
+                  {room.name} - KSh {room.price.toLocaleString()}/night {!isDemoMode() && !room.available ? '(Not Available)' : ''}
                 </option>
               ))}
             </select>
@@ -350,12 +380,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
               <span>Processing...</span>
             </>
           ) : (
-            <span>Submit Booking Request</span>
+            <span>{isDemoMode() ? 'Submit Demo Booking' : 'Submit Booking Request'}</span>
           )}
         </button>
         
         <a
-          href={`https://wa.me/254712345678?text=Hi, I'd like to make a booking:%0A%0AName: ${formData.name}%0ACheck-in: ${formData.checkIn}%0ACheck-out: ${formData.checkOut}%0AGuests: ${formData.guests}%0ARoom: ${rooms.find(r => r.id === formData.roomType)?.name}`}
+          href={`https://wa.me/254759750318?text=Hi, I'd like to make a booking:%0A%0AName: ${formData.name}%0ACheck-in: ${formData.checkIn}%0ACheck-out: ${formData.checkOut}%0AGuests: ${formData.guests}%0ARoom: ${rooms.find(r => r.id === formData.roomType)?.name}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
