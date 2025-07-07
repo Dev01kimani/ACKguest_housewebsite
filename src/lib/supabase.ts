@@ -11,8 +11,10 @@ const defaultKey = 'placeholder-key';
 const finalUrl = supabaseUrl || defaultUrl;
 const finalKey = supabaseAnonKey || defaultKey;
 
-console.log('Supabase URL:', finalUrl);
-console.log('Supabase Key exists:', !!finalKey);
+console.log('Supabase Configuration:');
+console.log('- URL:', finalUrl);
+console.log('- Key exists:', !!finalKey);
+console.log('- Using fallback:', !supabaseUrl || !supabaseAnonKey);
 
 export const supabase = createClient(finalUrl, finalKey);
 
