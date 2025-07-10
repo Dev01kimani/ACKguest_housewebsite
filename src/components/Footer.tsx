@@ -12,7 +12,10 @@ const Footer: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-amber-400" />
-                <span>+254 759 750 318</span>
+                <div>
+                  <div>+254 759 750 318</div>
+                  <div className="text-sm">Catering: 0735 756923</div>
+                </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-amber-400" />
@@ -20,7 +23,7 @@ const Footer: React.FC = () => {
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-amber-400" />
-                <span>123 Drive<br />Nyeri, Kenya</span>
+                <span>Nyeri, opposite Wamuti Distributors<br />on your way to King'ong'o near Chania Bridge</span>
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Heart, Award, MapPin, Clock, Coffee } from 'lucide-react';
+import { Users, Heart, Award, MapPin, Clock, Coffee, Phone } from 'lucide-react';
 
 const About: React.FC = () => {
   const values = [
@@ -184,14 +184,14 @@ const About: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Our Facilities
+              Our Facilities & Services
             </h2>
             <p className="text-xl text-gray-600">
-              Everything you need for a comfortable and memorable stay
+              Everything you need for accommodation, events, and conferences
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
             {facilities.map((facility, index) => (
               <div key={index} className="flex items-center space-x-3 bg-white p-4 rounded-lg shadow-sm">
                 <div className="bg-green-100 p-2 rounded-full">
@@ -200,6 +200,119 @@ const About: React.FC = () => {
                 <span className="text-gray-700">{facility}</span>
               </div>
             ))}
+          </div>
+
+          {/* Hall Hire & Catering Services */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Hall Hire */}
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="bg-amber-600 text-white p-6">
+                <h3 className="text-2xl font-bold">Hall Hire Only</h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <span className="font-medium">50–200 pax</span>
+                    <span className="text-xl font-bold text-amber-600">KSh 10,000</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <span className="font-medium">20–50 pax</span>
+                    <span className="text-xl font-bold text-amber-600">KSh 5,000</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <span className="font-medium">20–30 pax</span>
+                    <span className="text-xl font-bold text-amber-600">KSh 3,000</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">7–9 pax</span>
+                    <span className="text-xl font-bold text-amber-600">KSh 2,000</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Meals */}
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="bg-green-600 text-white p-6">
+                <h3 className="text-2xl font-bold">Meals – Per Person</h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <span className="font-medium">Breakfast</span>
+                    <span className="text-xl font-bold text-green-600">KSh 500</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <span className="font-medium">Tea/Coffee with Snacks</span>
+                    <span className="text-xl font-bold text-green-600">KSh 300</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <span className="font-medium">Buffet Lunch</span>
+                    <span className="text-xl font-bold text-green-600">KSh 800</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <span className="font-medium">Buffet Dinner</span>
+                    <span className="text-xl font-bold text-green-600">KSh 800</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">High Tea</span>
+                    <span className="text-xl font-bold text-green-600">KSh 600</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Catering Services */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Outside Catering Services
+            </h2>
+            <p className="text-xl text-gray-600">
+              Professional catering for all your special events
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              'Corporate Events',
+              'Weddings',
+              'Birthday Parties',
+              'Ruracio Events',
+              'Burials',
+              'Graduation',
+              'Church Events',
+              'Public/Community Meetings'
+            ].map((service, index) => (
+              <div key={index} className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Coffee className="h-8 w-8 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">{service}</h3>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-8 max-w-2xl mx-auto">
+              <h3 className="text-2xl font-bold text-amber-900 mb-4">Contact for Catering Services</h3>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a
+                  href="tel:+254735756923"
+                  className="flex items-center space-x-2 bg-amber-600 text-white px-6 py-3 rounded-lg hover:bg-amber-700 transition-colors"
+                >
+                  <Phone className="h-5 w-5" />
+                  <span>0735 756923</span>
+                </a>
+                <p className="text-amber-800">
+                  📍 Nyeri, opposite Wamuti Distributors on your way to King'ong'o near Chania Bridge
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

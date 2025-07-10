@@ -102,6 +102,12 @@ const Contact: React.FC = () => {
                     <a href="tel:+254759750318" className="text-amber-600 hover:text-amber-700 font-semibold">
                       +254 759 750 318
                     </a>
+                    <div className="mt-2">
+                      <p className="text-gray-600 text-sm">For catering services:</p>
+                      <a href="tel:+254735756923" className="text-amber-600 hover:text-amber-700 font-semibold">
+                        0735 756923
+                      </a>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
@@ -125,7 +131,8 @@ const Contact: React.FC = () => {
                     <p className="text-gray-600 mb-2">Visit us at our location</p>
                     <address className="text-gray-700 not-italic">
                       ACK Mt. Kenya Guest House<br />
-                      Nyeri, Kenya
+                      Nyeri, opposite Wamuti Distributors<br />
+                      on your way to King'ong'o near Chania Bridge
                     </address>
                   </div>
                 </div>
