@@ -20,6 +20,27 @@ export interface BookingData {
   specialRequests?: string;
 }
 
+export interface PaymentData {
+  bookingId: string;
+  amount: number;
+  paymentType: 'deposit' | 'balance' | 'full';
+  paymentMethod: 'mpesa' | 'cash' | 'cheque' | 'bank_transfer';
+  paymentReference?: string;
+}
+
+export interface Payment {
+  id: string;
+  booking_id: string;
+  amount: number;
+  payment_type: 'deposit' | 'balance' | 'full';
+  payment_method: 'mpesa' | 'cash' | 'cheque' | 'bank_transfer';
+  payment_reference?: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  paid_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ContactData {
   name: string;
   email: string;
@@ -52,6 +73,10 @@ export interface DatabaseBooking {
   special_requests: string | null;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   total_amount: number;
+  deposit_amount?: number;
+  deposit_paid?: boolean;
+  balance_amount?: number;
+  payment_status?: 'pending_deposit' | 'deposit_paid' | 'fully_paid';
   created_at: string;
   updated_at: string;
 }

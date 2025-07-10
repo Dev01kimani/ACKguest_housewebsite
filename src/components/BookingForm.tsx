@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Calendar, Users, MessageCircle, AlertCircle, CheckCircle, Database } from 'lucide-react';
+import { Calendar, Users, MessageCircle, AlertCircle, CheckCircle, Database, CreditCard } from 'lucide-react';
 import { useRooms } from '../hooks/useRooms';
 import { useBookings } from '../hooks/useBookings';
+import { usePayments } from '../hooks/usePayments';
 import { testSupabaseConnection } from '../lib/supabase';
-import type { BookingData } from '../utils/types';
+import PaymentForm from './PaymentForm';
+import type { BookingData, PaymentData } from '../utils/types';
 
 interface BookingFormProps {
   selectedRoom?: string;
@@ -24,8 +26,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
 
   const [errors, setErrors] = useState<Partial<BookingData>>({});
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean | null>(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [bookingTotal, setBookingTotal] = useState(0);
   const { rooms, loading: roomsLoading } = useRooms(formData.checkIn, formData.checkOut);
   const { createBooking, loading: bookingLoading, error: bookingError } = useBookings();
+  const { createPayment, loading: paymentLoading } = usePayments();
 
   // Test Supabase connection on component mount
   React.useEffect(() => {
@@ -89,11 +95,30 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      const success = await createBooking(formData);
-      if (success) {
-        onSubmit(formData);
+      const bookingResult = await createBooking(formData);
+      if (bookingResult) {
+        // Calculate total and show payment form
+        const total = calculateTotal();
+        setBookingTotal(total);
+        setBookingId(Date.now().toString()); // In real app, this would come from the booking creation
+        setShowPaymentForm(true);
       }
     }
+  };
+
+  const handlePaymentSubmit = async (paymentData: PaymentData): Promise<boolean> => {
+    const success = await createPayment(paymentData);
+    if (success) {
+      // Payment successful, complete the booking process
+      onSubmit(formData);
+      return true;
+    }
+    return false;
+  };
+
+  const calculateDepositAmount = (total: number) => {
+    // Calculate 50% deposit, rounded up to nearest 50 KSh
+    return Math.ceil((total * 0.5) / 50) * 50;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -138,6 +163,49 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
     }
     return getMinDate();
   };
+
+  // Show payment form if booking was created successfully
+  if (showPaymentForm && bookingId) {
+    const depositAmount = calculateDepositAmount(bookingTotal);
+    const balanceAmount = bookingTotal - depositAmount;
+
+    return (
+      <div className="space-y-6">
+        {/* Booking Summary */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+          <div className="flex items-center space-x-3 mb-4">
+            <CheckCircle className="h-6 w-6 text-green-600" />
+            <h3 className="text-lg font-semibold text-green-900">Booking Created Successfully!</h3>
+          </div>
+          <p className="text-green-800 mb-4">
+            Your booking request has been created. To confirm your reservation, please pay the required deposit.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div><span className="font-medium">Guest:</span> {formData.name}</div>
+            <div><span className="font-medium">Room:</span> {rooms.find(r => r.id === formData.roomType)?.name}</div>
+            <div><span className="font-medium">Check-in:</span> {new Date(formData.checkIn).toLocaleDateString()}</div>
+            <div><span className="font-medium">Check-out:</span> {new Date(formData.checkOut).toLocaleDateString()}</div>
+            <div><span className="font-medium">Guests:</span> {formData.guests}</div>
+            <div><span className="font-medium">Total Amount:</span> KSh {bookingTotal.toLocaleString()}</div>
+          </div>
+        </div>
+
+        {/* Payment Form */}
+        <PaymentForm
+          bookingId={bookingId}
+          totalAmount={bookingTotal}
+          depositAmount={depositAmount}
+          balanceAmount={balanceAmount}
+          paymentType="deposit"
+          onPaymentSubmit={handlePaymentSubmit}
+          onCancel={() => {
+            setShowPaymentForm(false);
+            setBookingId(null);
+          }}
+        />
+      </div>
+    );
+  }
 
   if (roomsLoading) {
     return (
@@ -382,16 +450,19 @@ const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => 
       <div className="flex flex-col sm:flex-row gap-4">
         <button
           type="submit"
-          disabled={bookingLoading}
+          disabled={bookingLoading || paymentLoading}
           className="flex-1 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
         >
-          {bookingLoading ? (
+          {(bookingLoading || paymentLoading) ? (
             <>
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
               <span>Processing...</span>
             </>
           ) : (
-            <span>{isSupabaseConnected ? 'Submit Booking Request' : 'Submit Demo Booking'}</span>
+            <>
+              <CreditCard className="h-5 w-5" />
+              <span>Continue to Payment</span>
+            </>
           )}
         </button>
         

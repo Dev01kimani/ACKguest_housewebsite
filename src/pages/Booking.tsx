@@ -24,6 +24,19 @@ const Booking: React.FC = () => {
     setSubmittedData(null);
   };
 
+  const calculateBookingTotal = () => {
+    if (!submittedData) return 0;
+    const nights = Math.ceil((new Date(submittedData.checkOut).getTime() - new Date(submittedData.checkIn).getTime()) / (1000 * 3600 * 24));
+    // This would normally come from room data, using a default price for demo
+    const roomPrice = 5000; // Default price
+    return nights * roomPrice;
+  };
+
+  const calculateDepositAmount = () => {
+    const total = calculateBookingTotal();
+    return Math.ceil((total * 0.5) / 50) * 50; // 50% rounded to nearest 50 KSh
+  };
+
   if (isSubmitted && submittedData) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -65,6 +78,23 @@ const Booking: React.FC = () => {
                   <div>
                     <span className="font-medium">Check-out:</span> {new Date(submittedData.checkOut).toLocaleDateString()}
                   </div>
+                  <div>
+                    <span className="font-medium">Total Amount:</span> KSh {calculateBookingTotal().toLocaleString()}
+                  </div>
+                  <div>
+                    <span className="font-medium">Deposit Required:</span> KSh {calculateDepositAmount().toLocaleString()}
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Information */}
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
+                <h3 className="text-lg font-semibold text-amber-900 mb-4">Payment Information</h3>
+                <div className="space-y-2 text-amber-800">
+                  <p>✅ Your booking has been created successfully</p>
+                  <p>💳 A 50% deposit payment has been processed</p>
+                  <p>📧 You will receive a confirmation email shortly</p>
+                  <p>💰 Remaining balance can be paid during check-in</p>
                 </div>
               </div>
 

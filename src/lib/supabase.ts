@@ -83,6 +83,10 @@ export type Database = {
           total_amount: number;
           created_at: string;
           updated_at: string;
+          deposit_amount?: number;
+          deposit_paid?: boolean;
+          balance_amount?: number;
+          payment_status?: 'pending_deposit' | 'deposit_paid' | 'fully_paid';
         };
         Insert: {
           id?: string;
@@ -98,6 +102,10 @@ export type Database = {
           total_amount: number;
           created_at?: string;
           updated_at?: string;
+          deposit_amount?: number;
+          deposit_paid?: boolean;
+          balance_amount?: number;
+          payment_status?: 'pending_deposit' | 'deposit_paid' | 'fully_paid';
         };
         Update: {
           id?: string;
@@ -111,6 +119,48 @@ export type Database = {
           special_requests?: string | null;
           status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
           total_amount?: number;
+          created_at?: string;
+          updated_at?: string;
+          deposit_amount?: number;
+          deposit_paid?: boolean;
+          balance_amount?: number;
+          payment_status?: 'pending_deposit' | 'deposit_paid' | 'fully_paid';
+        };
+      };
+      payments: {
+        Row: {
+          id: string;
+          booking_id: string;
+          amount: number;
+          payment_type: 'deposit' | 'balance' | 'full';
+          payment_method: 'mpesa' | 'cash' | 'cheque' | 'bank_transfer';
+          payment_reference: string | null;
+          status: 'pending' | 'completed' | 'failed' | 'refunded';
+          paid_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          booking_id: string;
+          amount: number;
+          payment_type: 'deposit' | 'balance' | 'full';
+          payment_method: 'mpesa' | 'cash' | 'cheque' | 'bank_transfer';
+          payment_reference?: string | null;
+          status?: 'pending' | 'completed' | 'failed' | 'refunded';
+          paid_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          booking_id?: string;
+          amount?: number;
+          payment_type?: 'deposit' | 'balance' | 'full';
+          payment_method?: 'mpesa' | 'cash' | 'cheque' | 'bank_transfer';
+          payment_reference?: string | null;
+          status?: 'pending' | 'completed' | 'failed' | 'refunded';
+          paid_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
