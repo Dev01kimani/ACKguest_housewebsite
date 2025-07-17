@@ -16,8 +16,9 @@ export interface BookingData {
   checkIn: string;
   checkOut: string;
   guests: number;
-  roomType: number; // ✅ Updated from string to number
+  roomType: number;
   specialRequests?: string;
+  mealPlan: 'bed_only' | 'bb' | 'half_board' | 'full_board';
 }
 
 export interface PaymentData {
@@ -49,6 +50,15 @@ export interface ContactData {
   message: string;
 }
 
+// WhatsApp booking interfaces
+export interface WhatsAppBooking extends BookingData {
+  id: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  created_at: string;
+  total_amount?: number;
+}
+
+// Legacy database interfaces (hidden but kept for future use)
 export interface DatabaseRoom {
   id: string;
   name: string;

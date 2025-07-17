@@ -1,18 +1,7 @@
 import { useState } from 'react';
+import type { BookingData } from '../utils/types';
 
-// Local types for the booking system
-interface BookingData {
-  name: string;
-  email: string;
-  phone: string;
-  checkIn: string;
-  checkOut: string;
-  guests: number;
-  roomType: number;
-  specialRequests: string;
-  mealPlan: 'bed_only' | 'bb' | 'half_board' | 'full_board';
-}
-
+// Local types for the WhatsApp booking system
 interface StoredBooking extends BookingData {
   id: string;
   status: 'pending' | 'confirmed' | 'cancelled';
@@ -26,11 +15,46 @@ export const useBookings = () => {
 
   // Mock room data for price calculation
   const ROOMS = [
-    { id: 1, name: 'Standard Single Room', price: 2500 },
-    { id: 2, name: 'Standard Double Room', price: 3500 },
-    { id: 3, name: 'Deluxe Room', price: 4500 },
-    { id: 4, name: 'Executive Suite', price: 6500 },
-    { id: 5, name: 'Family Room', price: 5500 },
+    { 
+      id: 1, 
+      name: 'Standard Single Room', 
+      bed_only: 2500, 
+      bb: 2800, 
+      half_board: 3500, 
+      full_board: 4200 
+    },
+    { 
+      id: 2, 
+      name: 'Standard Double Room', 
+      bed_only: 3500, 
+      bb: 3800, 
+      half_board: 4500, 
+      full_board: 5200 
+    },
+    { 
+      id: 3, 
+      name: 'Deluxe Room', 
+      bed_only: 4500, 
+      bb: 4800, 
+      half_board: 5500, 
+      full_board: 6200 
+    },
+    { 
+      id: 4, 
+      name: 'Executive Suite', 
+      bed_only: 6500, 
+      bb: 6800, 
+      half_board: 7500, 
+      full_board: 8200 
+    },
+    { 
+      id: 5, 
+      name: 'Family Room', 
+      bed_only: 5500, 
+      bb: 5800, 
+      half_board: 6500, 
+      full_board: 7200 
+    },
   ];
 
   const createBooking = async (bookingData: BookingData): Promise<boolean> => {
@@ -47,11 +71,12 @@ export const useBookings = () => {
         throw new Error('Selected room not found');
       }
 
-      // Calculate total amount
+      // Calculate total amount based on meal plan
       const checkInDate = new Date(bookingData.checkIn);
       const checkOutDate = new Date(bookingData.checkOut);
       const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 3600 * 24));
-      const totalAmount = nights * room.price;
+      const roomPrice = room[bookingData.mealPlan] || room.bed_only;
+      const totalAmount = nights * roomPrice;
 
       // Store booking locally
       const existingBookings = JSON.parse(localStorage.getItem('whatsapp_bookings') || '[]');

@@ -73,7 +73,7 @@ const Rooms: React.FC = () => {
       <section className="relative py-20 bg-gradient-to-r from-amber-600 to-amber-700 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Rooms & Rates</h1>
         <p className="text-xl text-amber-100 max-w-3xl mx-auto">
-          Choose from our comfortable and affordable room options
+          Choose from our comfortable and affordable room options with flexible meal plans
         </p>
       </section>
 
@@ -83,7 +83,7 @@ const Rooms: React.FC = () => {
           <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Calendar className="h-5 w-5 mr-2" />
-              Check Availability
+              Check Availability (Optional)
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -128,33 +128,57 @@ const Rooms: React.FC = () => {
             <div key={room.id} className="bg-white rounded-lg shadow hover:shadow-lg transition">
               <div className="relative">
                 <img
-                  src={room.image_url ?? ''}
+                  src={room.image_url}
                   alt={room.name}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-cover rounded-t-lg"
                   loading="lazy"
                 />
                 <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${
                   room.available ? 'bg-green-500' : 'bg-red-500'
                 } text-white`}>
-                  {room.available ? 'Available' : 'Booked'}
+                  {room.available ? 'Available' : 'Check Availability'}
                 </span>
               </div>
 
               <div className="p-6">
-                <div className="flex justify-between mb-2">
+                <div className="flex justify-between items-start mb-4">
                   <h3 className="text-xl font-bold text-gray-800">{room.name}</h3>
-                  <div className="text-sm text-right text-gray-700 space-y-1">
-                    <div><strong>Bed Only:</strong> KSh {room.bed_only}</div>
-                    <div><strong>B&B:</strong> KSh {room.bb}</div>
-                    <div><strong>Half Board:</strong> KSh {room.half_board}</div>
-                    <div><strong>Full Board:</strong> KSh {room.full_board}</div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-amber-600">
+                      KSh {room.bed_only.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-500">per night</div>
                   </div>
                 </div>
+                
                 <p className="text-gray-600 mb-4">{room.description}</p>
 
                 <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
                   <Users className="h-4 w-4" />
-                  <span>{room.capacity} Guest{room.capacity > 1 ? 's' : ''}</span>
+                  <span>Up to {room.capacity} Guest{room.capacity > 1 ? 's' : ''}</span>
+                </div>
+
+                {/* Meal Plan Pricing */}
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">Meal Plan Options:</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Bed Only:</span>
+                      <span className="font-medium">KSh {room.bed_only.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>B&B:</span>
+                      <span className="font-medium">KSh {room.bb.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Half Board:</span>
+                      <span className="font-medium">KSh {room.half_board.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Full Board:</span>
+                      <span className="font-medium">KSh {room.full_board.toLocaleString()}</span>
+                    </div>
+                  </div>
                 </div>
 
                 {room.amenities?.length > 0 && (
@@ -179,23 +203,14 @@ const Rooms: React.FC = () => {
                     onClick={() => setSelectedRoom(room)}
                     className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-md"
                   >
-                    View
+                    View Details
                   </button>
-                  {room.available ? (
-                    <Link
-                      to={`/booking?room=${room.id || room.id}`}
-                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-center"
-                    >
-                      Book Now
-                    </Link>
-                  ) : (
-                    <button
-                      disabled
-                      className="flex-1 bg-gray-300 text-gray-500 px-4 py-2 rounded-md cursor-not-allowed"
-                    >
-                      Not Available
-                    </button>
-                  )}
+                  <Link
+                    to={`/booking?room=${room.id}`}
+                    className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-center"
+                  >
+                    Book Now
+                  </Link>
                 </div>
               </div>
             </div>
@@ -209,60 +224,69 @@ const Rooms: React.FC = () => {
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="relative">
               <img
-                src={selectedRoom.image_url ?? ''}
+                src={selectedRoom.image_url}
                 alt={selectedRoom.name}
-                className="w-full h-64 object-cover"
+                className="w-full h-64 object-cover rounded-t-lg"
                 loading="lazy"
               />
               <button
                 onClick={() => setSelectedRoom(null)}
-                className="absolute top-4 right-4 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
+                className="absolute top-4 right-4 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-opacity-70"
               >
                 ×
               </button>
             </div>
             <div className="p-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">{selectedRoom.name}</h3>
-              <p className="text-gray-600 mb-2">{selectedRoom.description}</p>
-              <div className="text-sm text-gray-700 space-y-1 mb-4">
-                <div><strong>Bed Only:</strong> KSh {selectedRoom.bed_only}</div>
-                <div><strong>B&B:</strong> KSh {selectedRoom.bb}</div>
-                <div><strong>Half Board:</strong> KSh {selectedRoom.half_board}</div>
-                <div><strong>Full Board:</strong> KSh {selectedRoom.full_board}</div>
-              </div>
+              <p className="text-gray-600 mb-4">{selectedRoom.description}</p>
+              
               <div className="mb-4">
-                <h4 className="font-semibold text-gray-900 mb-2">Notes:</h4>
-                <ul className="list-disc pl-6 space-y-2 text-gray-700">
-                  <li>Children below 3 years stay free if sharing with an adult.</li>
-                  <li>Children between 4-12 years sharing the same room with an adult will be charged 50% of the room rate.</li>
-                  <li>Children above 13 years will be charged as an adult for the room rate.</li>
-                  <li>Payments acceptable in KSh, M-Pesa, cheque.</li>
-                  <li>A deposit of half the rate is required to reserve a room.</li>
-                </ul>
-              </div>
-              <div className="mb-4">
-                <h4 className="font-semibold text-gray-900 mb-2">Conference Rates (KShs)</h4>
-                <div className="space-y-2 text-gray-700">
-                  <div><strong>Full Board Conference Package:</strong> Single: 3700, Double: 4000</div>
-                  <div><strong>Conference Package (per person):</strong> Full Day: 2500, Half Day: 1500, Full Day with Stationeries: 2800, Half Day with Stationeries: 1700</div>
+                <h4 className="font-semibold text-gray-900 mb-2">Meal Plan Pricing (per night):</h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="bg-gray-50 p-3 rounded">
+                    <div className="font-medium">Bed Only</div>
+                    <div className="text-lg font-bold text-amber-600">KSh {selectedRoom.bed_only.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <div className="font-medium">Bed & Breakfast</div>
+                    <div className="text-lg font-bold text-amber-600">KSh {selectedRoom.bb.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <div className="font-medium">Half Board</div>
+                    <div className="text-lg font-bold text-amber-600">KSh {selectedRoom.half_board.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <div className="font-medium">Full Board</div>
+                    <div className="text-lg font-bold text-amber-600">KSh {selectedRoom.full_board.toLocaleString()}</div>
+                  </div>
                 </div>
               </div>
+
+              <div className="mb-4">
+                <h4 className="font-semibold text-gray-900 mb-2">Important Notes:</h4>
+                <ul className="list-disc pl-6 space-y-1 text-sm text-gray-700">
+                  <li>Children below 3 years stay free if sharing with an adult</li>
+                  <li>Children between 4-12 years sharing the same room with an adult will be charged 50% of the room rate</li>
+                  <li>Children above 13 years will be charged as an adult for the room rate</li>
+                  <li>A deposit of 50% of the total amount is required to reserve a room</li>
+                  <li>Payments acceptable via M-Pesa, bank transfer, cash, or cheque</li>
+                </ul>
+              </div>
+
               <div className="flex justify-between mt-6">
                 <button
                   onClick={() => setSelectedRoom(null)}
-                  className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-md"
+                  className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-2 rounded-md"
                 >
                   Close
                 </button>
-                {selectedRoom.available && (
-                  <Link
-                    to={`/booking?room=${selectedRoom.id || selectedRoom.id}`}
-                    className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md"
-                    onClick={() => setSelectedRoom(null)}
-                  >
-                    Book This Room
-                  </Link>
-                )}
+                <Link
+                  to={`/booking?room=${selectedRoom.id}`}
+                  className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-md"
+                  onClick={() => setSelectedRoom(null)}
+                >
+                  Book This Room
+                </Link>
               </div>
             </div>
           </div>

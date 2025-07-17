@@ -17,6 +17,11 @@ export interface Room {
   full_board: number;
 }
 
+// Add this interface for rooms with availability checking
+export interface RoomWithAvailability extends Room {
+  available: boolean;
+}
+
 // Static room data for WhatsApp booking
 const ROOMS_DATA: Room[] = [
   {
@@ -92,7 +97,7 @@ const ROOMS_DATA: Room[] = [
 ];
 
 export const useRooms = (checkIn?: string, checkOut?: string) => {
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const [rooms, setRooms] = useState<RoomWithAvailability[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -107,7 +112,7 @@ export const useRooms = (checkIn?: string, checkOut?: string) => {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         // Filter rooms based on availability (you can add custom logic here)
-        let availableRooms = [...ROOMS_DATA];
+        let availableRooms: RoomWithAvailability[] = [...ROOMS_DATA];
         
         // If dates are provided, you could add availability checking logic here
         if (checkIn && checkOut) {
@@ -150,7 +155,7 @@ export const useRooms = (checkIn?: string, checkOut?: string) => {
     return rooms.find(room => room.id === id.toString());
   };
 
-  const getAvailableRooms = (): Room[] => {
+  const getAvailableRooms = (): RoomWithAvailability[] => {
     return rooms.filter(room => room.available);
   };
 
