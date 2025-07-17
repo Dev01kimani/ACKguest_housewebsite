@@ -1,237 +1,157 @@
-import React, { useState } from 'react';
-import { useRooms } from '../hooks/useRooms';
-import type { BookingData } from '../utils/types';
+import { useState } from 'react';
 
-interface BookingFormProps {
-  selectedRoom?: number;
-  onSubmit: (data: BookingData) => void;
+// Local types for the booking system
+interface BookingData {
+  name: string;
+  email: string;
+  phone: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  roomType: number;
+  specialRequests: string;
+  mealPlan: 'bed_only' | 'bb' | 'half_board' | 'full_board';
 }
 
-const BookingForm: React.FC<BookingFormProps> = ({ selectedRoom, onSubmit }) => {
-  const [formData, setFormData] = useState<Omit<BookingData, 'mealPlan'>>({
-    name: '',
-    email: '',
-    phone: '',
-    checkIn: '',
-    checkOut: '',
-    guests: 1,
-    roomType: selectedRoom || 0,
-    specialRequests: '',
-  });
+interface StoredBooking extends BookingData {
+  id: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  created_at: string;
+  total_amount?: number;
+}
 
-  const [mealPlan, setMealPlan] = useState<BookingData['mealPlan']>('bed_only');
-  const [errors, setErrors] = useState<Partial<BookingData>>({});
-  const { rooms, loading: roomsLoading } = useRooms(formData.checkIn, formData.checkOut);
+export const useBookings = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<BookingData> = {};
+  // Mock room data for price calculation
+  const ROOMS = [
+    { id: '1', name: 'Standard Single Room', price: 2500 },
+    { id: '2', name: 'Standard Double Room', price: 3500 },
+    { id: '3', name: 'Deluxe Room', price: 4500 },
+    { id: '4', name: 'Executive Suite', price: 6500 },
+    { id: '5', name: 'Family Room', price: 5500 },
+  ];
 
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-    if (!formData.checkIn) newErrors.checkIn = 'Check-in date is required';
-    if (!formData.checkOut) newErrors.checkOut = 'Check-out date is required';
-    if (!formData.roomType) newErrors.roomType = 'Please select a room type';
+  const createBooking = async (bookingData: BookingData): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const phoneRegex = /^[+]?\d{7,15}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
-    }
-
-    if (formData.checkIn && formData.checkOut) {
-      const checkInDate = new Date(formData.checkIn);
-      const checkOutDate = new Date(formData.checkOut);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      if (checkInDate < today) {
-        newErrors.checkIn = 'Check-in date cannot be in the past';
+      // Get room details for price calculation
+      const room = ROOMS.find(r => r.id === bookingData.roomType.toString());
+      if (!room) {
+        throw new Error('Selected room not found');
       }
 
-      if (checkOutDate <= checkInDate) {
-        newErrors.checkOut = 'Check-out date must be after check-in date';
-      }
-    }
+      // Calculate total amount
+      const checkInDate = new Date(bookingData.checkIn);
+      const checkOutDate = new Date(bookingData.checkOut);
+      const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 3600 * 24));
+      const totalAmount = nights * room.price;
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+      // Store booking locally
+      const existingBookings = JSON.parse(localStorage.getItem('whatsapp_bookings') || '[]');
+      const newBooking: StoredBooking = {
+        id: Date.now().toString(),
+        ...bookingData,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        total_amount: totalAmount
+      };
+      
+      existingBookings.push(newBooking);
+      localStorage.setItem('whatsapp_bookings', JSON.stringify(existingBookings));
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    // Send to backend (optional)
-    onSubmit({ ...formData, mealPlan });
-
-    const room = rooms.find(r => r.id === formData.roomType);
-    const mealPlanLabel = {
-      bed_only: 'Bed Only',
-      bb: 'Bed & Breakfast',
-      half_board: 'Half Board',
-      full_board: 'Full Board',
-    }[mealPlan];
-
-    const message = `
-Hello, I would like to make a room booking:
-
-• Name: ${formData.name}
-• Email: ${formData.email}
-• Phone: ${formData.phone}
-• Check-in: ${formData.checkIn}
-• Check-out: ${formData.checkOut}
-• Guests: ${formData.guests}
-• Room Type: ${room?.name || 'N/A'}
-• Meal Plan: ${mealPlanLabel}
-• Special Requests: ${formData.specialRequests || 'None'}
-
-Please let me know if it's available. Thank you!
-    `;
-
-    const encodedMessage = encodeURIComponent(message);
-    const phoneNumber = '+254759750318';
-    const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-    window.open(whatsappLink, '_blank');
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-
-    if (name === 'mealPlan') {
-      setMealPlan(value as BookingData['mealPlan']);
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]:
-          name === 'roomType' || name === 'guests'
-            ? Number(value)
-            : value,
-      }));
-
-      if (errors[name as keyof BookingData]) {
-        setErrors(prev => ({ ...prev, [name]: undefined }));
-      }
+      console.log('Booking stored locally:', newBooking);
+      return true;
+    } catch (err) {
+      console.error('Error creating booking:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create booking');
+      return false;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getMinDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+  const getBookings = async (): Promise<StoredBooking[]> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const storedBookings = localStorage.getItem('whatsapp_bookings');
+      const bookings = storedBookings ? JSON.parse(storedBookings) : [];
+      
+      // Sort by creation date (newest first)
+      return bookings.sort((a: StoredBooking, b: StoredBooking) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    } catch (err) {
+      console.error('Error fetching bookings:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch bookings');
+      return [];
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (roomsLoading) {
-    return <div>Loading rooms...</div>;
-  }
+  const updateBookingStatus = async (bookingId: string, status: 'confirmed' | 'cancelled'): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  return (
-    <section className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md">
-      <h2 className="text-xl font-semibold mb-4">Make a Reservation</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          name="name"
-          value={formData.name}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-          placeholder="Full Name"
-        />
-        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+      const storedBookings = JSON.parse(localStorage.getItem('whatsapp_bookings') || '[]');
+      const updatedBookings = storedBookings.map((booking: StoredBooking) =>
+        booking.id === bookingId ? { ...booking, status } : booking
+      );
 
-        <input
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-          placeholder="Email Address"
-        />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+      localStorage.setItem('whatsapp_bookings', JSON.stringify(updatedBookings));
+      return true;
+    } catch (err) {
+      console.error('Error updating booking status:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update booking');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        <input
-          name="phone"
-          value={formData.phone}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-          placeholder="Phone Number"
-        />
-        {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+  const deleteBooking = async (bookingId: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        <input
-          type="date"
-          name="checkIn"
-          value={formData.checkIn}
-          min={getMinDate()}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-        />
-        {errors.checkIn && <p className="text-red-500 text-sm">{errors.checkIn}</p>}
+      const storedBookings = JSON.parse(localStorage.getItem('whatsapp_bookings') || '[]');
+      const filteredBookings = storedBookings.filter((booking: StoredBooking) => booking.id !== bookingId);
 
-        <input
-          type="date"
-          name="checkOut"
-          value={formData.checkOut}
-          min={formData.checkIn}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-        />
-        {errors.checkOut && <p className="text-red-500 text-sm">{errors.checkOut}</p>}
+      localStorage.setItem('whatsapp_bookings', JSON.stringify(filteredBookings));
+      return true;
+    } catch (err) {
+      console.error('Error deleting booking:', err);
+      setError(err instanceof Error ? err.message : 'Failed to delete booking');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        <input
-          type="number"
-          name="guests"
-          value={formData.guests}
-          min={1}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-          placeholder="Number of Guests"
-        />
+  const clearAllBookings = (): void => {
+    localStorage.removeItem('whatsapp_bookings');
+  };
 
-        <select
-          name="roomType"
-          value={formData.roomType}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-        >
-          <option value={0}>Select a Room</option>
-          {rooms.map((room) => (
-            <option key={room.id} value={room.id}>
-              {room.name}
-            </option>
-          ))}
-        </select>
-        {errors.roomType && <p className="text-red-500 text-sm">{errors.roomType}</p>}
-
-        <select
-          name="mealPlan"
-          value={mealPlan}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-        >
-          <option value="bed_only">Bed Only</option>
-          <option value="bb">Bed & Breakfast</option>
-          <option value="half_board">Half Board</option>
-          <option value="full_board">Full Board</option>
-        </select>
-
-        <textarea
-          name="specialRequests"
-          value={formData.specialRequests}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-          placeholder="Special Requests (Optional)"
-        />
-
-        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
-          Submit & Continue on WhatsApp
-        </button>
-      </form>
-    </section>
-  );
+  return {
+    createBooking,
+    getBookings,
+    updateBookingStatus,
+    deleteBooking,
+    clearAllBookings,
+    loading,
+    error
+  };
 };
-
-export default BookingForm;

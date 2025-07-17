@@ -1,107 +1,75 @@
 import { useState } from 'react';
-import { supabase } from '../utils/supabaseClient';
-import { BookingData, BookingInsert } from '../types';
+
+// Local types for the booking system
+interface BookingData {
+  name: string;
+  email: string;
+  phone: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  roomType: number;
+  specialRequests: string;
+  mealPlan: 'bed_only' | 'bb' | 'half_board' | 'full_board';
+}
+
+interface StoredBooking extends BookingData {
+  id: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  created_at: string;
+  total_amount?: number;
+}
 
 export const useBookings = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const testSupabaseConnection = async (): Promise<boolean> => {
-    try {
-      const { error } = await supabase.from("rooms").select("id").limit(1);
-      return !error;
-    } catch {
-      return false;
-    }
-  };
+  // Mock room data for price calculation
+  const ROOMS = [
+    { id: 1, name: 'Standard Single Room', price: 2500 },
+    { id: 2, name: 'Standard Double Room', price: 3500 },
+    { id: 3, name: 'Deluxe Room', price: 4500 },
+    { id: 4, name: 'Executive Suite', price: 6500 },
+    { id: 5, name: 'Family Room', price: 5500 },
+  ];
 
   const createBooking = async (bookingData: BookingData): Promise<boolean> => {
     try {
       setLoading(true);
       setError(null);
 
-      const connectionTest = await testSupabaseConnection();
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // === OFFLINE FALLBACK ===
-      if (!connectionTest) {
-        console.log('Supabase not available, simulating booking creation:', bookingData);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        const existingBookings = JSON.parse(localStorage.getItem('demo_bookings') || '[]');
-        const newBooking = {
-          id: Date.now().toString(),
-          ...bookingData,
-          status: 'pending',
-          created_at: new Date().toISOString()
-        };
-        existingBookings.push(newBooking);
-        localStorage.setItem('demo_bookings', JSON.stringify(existingBookings));
-
-        console.log('Demo booking stored locally:', newBooking);
-        return true;
+      // Get room details for price calculation
+      const room = ROOMS.find(r => r.id === bookingData.roomType);
+      if (!room) {
+        throw new Error('Selected room not found');
       }
 
+      // Calculate total amount
       const checkInDate = new Date(bookingData.checkIn);
       const checkOutDate = new Date(bookingData.checkOut);
-
-      // === ROOM AVAILABILITY CHECK ===
-      const { data: overlappingBookings, error: availabilityError } = await supabase
-        .from('bookings')
-        .select('id')
-        .eq('room_id', Number(bookingData.roomType))
-        .or(`and(check_in,lte.${bookingData.checkOut},check_out,gte.${bookingData.checkIn})`);
-
-      if (availabilityError) {
-        console.error('Availability check error:', availabilityError);
-        throw new Error(`Failed to check room availability: ${availabilityError.message}`);
-      }
-
-      if (overlappingBookings && overlappingBookings.length > 0) {
-        throw new Error('❌ Room is not available for the selected dates.');
-      }
-
-      console.log('Room is available, proceeding with booking...');
-
-      // === GET ROOM PRICE ===
-      const { data: roomData, error: roomError } = await supabase
-        .from('rooms')
-        .select('price')
-        .eq('id', Number(bookingData.roomType))
-        .single();
-
-      if (roomError || !roomData) {
-        throw new Error(`Failed to get room details: ${roomError?.message || 'Room not found'}`);
-      }
-
       const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 3600 * 24));
-      const totalAmount = nights * roomData.price;
+      const totalAmount = nights * room.price;
 
-      // === CREATE BOOKING ===
-      const bookingInsert: BookingInsert = {
-        room_id: Number(bookingData.roomType),
-        guest_name: bookingData.name,
-        guest_email: bookingData.email,
-        guest_phone: bookingData.phone,
-        check_in: bookingData.checkIn,
-        check_out: bookingData.checkOut,
-        number_of_guests: bookingData.guests,
-        special_requests: bookingData.specialRequests || null,
-        total_amount: totalAmount,
-        status: 'pending'
+      // Store booking locally
+      const existingBookings = JSON.parse(localStorage.getItem('whatsapp_bookings') || '[]');
+      const newBooking: StoredBooking = {
+        id: Date.now().toString(),
+        ...bookingData,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        total_amount: totalAmount
       };
+      
+      existingBookings.push(newBooking);
+      localStorage.setItem('whatsapp_bookings', JSON.stringify(existingBookings));
 
-      const { error: insertError } = await supabase
-        .from('bookings')
-        .insert([bookingInsert]);
-
-      if (insertError) {
-        throw new Error(`Failed to create booking: ${insertError.message}`);
-      }
-
-      console.log('✅ Booking created successfully in Supabase');
+      console.log('Booking stored locally:', newBooking);
       return true;
     } catch (err) {
-      console.error('❌ Error creating booking:', err);
+      console.error('Error creating booking:', err);
       setError(err instanceof Error ? err.message : 'Failed to create booking');
       return false;
     } finally {
@@ -109,29 +77,21 @@ export const useBookings = () => {
     }
   };
 
-  const getBookings = async (): Promise<BookingInsert[]> => {
+  const getBookings = async (): Promise<StoredBooking[]> => {
     try {
       setLoading(true);
       setError(null);
 
-      const connectionTest = await testSupabaseConnection();
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      if (!connectionTest) {
-        console.log('Supabase offline, reading from local storage');
-        const demoBookings = localStorage.getItem('demo_bookings');
-        return demoBookings ? JSON.parse(demoBookings) : [];
-      }
-
-      const { data, error: fetchError } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (fetchError) {
-        throw new Error(`Failed to fetch bookings: ${fetchError.message}`);
-      }
-
-      return data as BookingInsert[];
+      const storedBookings = localStorage.getItem('whatsapp_bookings');
+      const bookings = storedBookings ? JSON.parse(storedBookings) : [];
+      
+      // Sort by creation date (newest first)
+      return bookings.sort((a: StoredBooking, b: StoredBooking) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     } catch (err) {
       console.error('Error fetching bookings:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch bookings');
@@ -141,9 +101,56 @@ export const useBookings = () => {
     }
   };
 
+  const updateBookingStatus = async (bookingId: string, status: 'confirmed' | 'cancelled'): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const storedBookings = JSON.parse(localStorage.getItem('whatsapp_bookings') || '[]');
+      const updatedBookings = storedBookings.map((booking: StoredBooking) =>
+        booking.id === bookingId ? { ...booking, status } : booking
+      );
+
+      localStorage.setItem('whatsapp_bookings', JSON.stringify(updatedBookings));
+      return true;
+    } catch (err) {
+      console.error('Error updating booking status:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update booking');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteBooking = async (bookingId: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const storedBookings = JSON.parse(localStorage.getItem('whatsapp_bookings') || '[]');
+      const filteredBookings = storedBookings.filter((booking: StoredBooking) => booking.id !== bookingId);
+
+      localStorage.setItem('whatsapp_bookings', JSON.stringify(filteredBookings));
+      return true;
+    } catch (err) {
+      console.error('Error deleting booking:', err);
+      setError(err instanceof Error ? err.message : 'Failed to delete booking');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearAllBookings = (): void => {
+    localStorage.removeItem('whatsapp_bookings');
+  };
+
   return {
     createBooking,
     getBookings,
+    updateBookingStatus,
+    deleteBooking,
+    clearAllBookings,
     loading,
     error
   };
