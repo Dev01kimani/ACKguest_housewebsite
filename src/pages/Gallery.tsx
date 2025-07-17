@@ -6,73 +6,70 @@ const Gallery: React.FC = () => {
 
   const images = [
     {
-      src: 'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      src: 'Images/ACKview.jpeg',
       category: 'exterior',
       title: 'Main Building',
-      description: 'Beautiful exterior view of Serenity Haven Guest House'
+      description: 'Beautiful exterior view of ACK Guest House'
     },
     {
-      src: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      src: 'Images/ACKbedmain.jpeg',
       category: 'rooms',
-      title: 'Deluxe Double Room',
+      title: 'Double Room',
       description: 'Comfortable and spacious double room with modern amenities'
     },
     {
-      src: 'https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      src: 'Images/ACKcompound2.jpeg',
       category: 'exterior',
-      title: 'Garden Area',
-      description: 'Peaceful garden setting perfect for relaxation'
+      title: 'Compound Area',
+      description: 'Peaceful gazebo setting perfect for relaxation'
     },
     {
-      src: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      category: 'rooms',
-      title: 'Standard Single Room',
-      description: 'Cozy single room with all essential amenities'
-    },
-    {
-      src: 'https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      category: 'rooms',
-      title: 'Family Suite',
-      description: 'Spacious family accommodation with separate living area'
-    },
-    {
-      src: 'https://images.pexels.com/photos/1428348/pexels-photo-1428348.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      category: 'rooms',
-      title: 'Executive Room',
-      description: 'Premium room with enhanced amenities and lake view'
-    },
-    {
-      src: 'https://images.pexels.com/photos/1080721/pexels-photo-1080721.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      src: 'Images/ACKrestaurant.jpeg',
       category: 'dining',
-      title: 'Breakfast Area',
-      description: 'Start your day with a delicious breakfast in our dining area'
+      title: 'Restaurant Area',
+      description: 'Dining area with a cozy atmosphere'
     },
     {
-      src: 'https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      category: 'amenities',
-      title: 'Reception Area',
-      description: 'Welcoming reception with 24/7 staff assistance'
-    },
-    {
-      src: 'https://images.pexels.com/photos/2506947/pexels-photo-2506947.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      category: 'location',
-      title: 'Lake Naivasha View',
-      description: 'Beautiful lake views just minutes from our guest house'
-    },
-    {
-      src: 'https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      category: 'location',
-      title: 'Local Wildlife',
-      description: 'Experience the amazing wildlife of the Naivasha region'
-    },
-    {
-      src: 'https://images.pexels.com/photos/1831234/pexels-photo-1831234.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      src: 'Images/ACKcompound.jpeg',
       category: 'amenities',
       title: 'Parking Area',
-      description: 'Secure parking available for all guests'
+      description: 'Spacious and secure parking area available for all guests.'
+
     },
     {
-      src: 'https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      src: 'Images/ACKroomWardrobe.jpeg',
+      category: 'rooms',
+      title: 'Executive Room with Wardrobe',
+      description: 'Spacious executive room featuring a large wardrobe and modern furnishings'
+    },
+    {
+      src: 'Images/ACKmainhall.jpeg',
+      category: 'amenities',
+      title: 'Conference Hall',
+      description: 'Modern conference hall equipped with audio-visual facilities'
+    },
+    {
+      src: 'Images/ACKminihall.jpeg',
+      category: 'amenities',
+      title: 'Community Hall',
+      description: 'Spacious community hall suitable for gatherings and events'
+    },
+    {
+      src: 'Images/ACKmainhall2.jpeg',
+      category: 'amenities',
+      title: 'Main Hall',
+      description: 'Large main hall with seating for events and gatherings'
+    },
+    
+    {
+      src: 'Images/ACK2.webp',
+      category: 'location',
+      title: 'Welcoming Reception',
+      description: 'Warm and inviting reception area to greet our guests'
+    },
+
+    {
+      src: 'Images/ACK1.webp',
       category: 'location',
       title: 'Sunset Views',
       description: 'Spectacular sunset views from our property'

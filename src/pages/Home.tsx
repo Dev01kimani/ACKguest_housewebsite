@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Wifi, Coffee, Car, Users, MapPin, CheckCircle } from 'lucide-react';
+import { Star, Wifi, Coffee, Car, Users, CheckCircle } from 'lucide-react';
 
 const Home: React.FC = () => {
   const features = [
@@ -20,7 +20,7 @@ const Home: React.FC = () => {
     {
       name: 'Michael Chen',
       rating: 5,
-      comment: 'Perfect location for exploring Naivasha. The guest house exceeded our expectations in every way.',
+      comment: 'Perfect location for exploring Nyeri. The guest house exceeded our expectations in every way.',
       date: '1 month ago'
     },
     {
@@ -38,7 +38,8 @@ const Home: React.FC = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url('/Images/ACK1.webp')`
+            backgroundImage: `url('/Images/ACKview.jpeg')`
+          
 
 
           }}
@@ -52,7 +53,7 @@ const Home: React.FC = () => {
             <span className="text-amber-400">ACK Mt. Kenya Guest House</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-gray-200">
-            Your peaceful retreat in the heart of ACK Mt. Kenya Guest House, where comfort meets nature
+            Your peaceful retreat in the heart of Nyeri, where comfort meets nature
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -76,7 +77,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose ACK Mt. Kenya Guest house?
+              Why Choose ACK Mt. Kenya Guest House?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Experience exceptional hospitality with modern amenities in a serene setting
@@ -111,7 +112,7 @@ const Home: React.FC = () => {
                 accommodations provide the ideal base for exploring the region's attractions.
               </p>
               <ul className="space-y-3 mb-8">
-                {['Prime location near Lake Naivasha', 'Comfortable, well-appointed rooms', 'Personalized service', 'Peaceful garden setting'].map((item, index) => (
+                {['Prime location in Nyeri town', 'Comfortable, well-appointed rooms', 'Personalized service', 'Peaceful garden setting'].map((item, index) => (
                   <li key={index} className="flex items-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-500" />
                     <span className="text-gray-700">{item}</span>
@@ -128,7 +129,7 @@ const Home: React.FC = () => {
             </div>
             <div className="relative">
               <img
-                src="/Images/ACK2.webp"
+                src="/Images/ACKcompound2.jpeg"
                 alt="Guest house exterior"
                 className="rounded-lg shadow-lg"
               />

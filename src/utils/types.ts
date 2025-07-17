@@ -16,7 +16,7 @@ export interface BookingData {
   checkIn: string;
   checkOut: string;
   guests: number;
-  roomType: string;
+  roomType: number; // ✅ Updated from string to number
   specialRequests?: string;
 }
 
