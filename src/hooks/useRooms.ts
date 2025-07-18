@@ -41,7 +41,7 @@ const ROOMS_DATA: Room[] = [
     full_board: 3500,
     capacity: 1,
     amenities: ['TV', 'Desk', 'Free Wi-Fi'],
-    image_url: 'https://jekjzdfuuudzdmdmzyjw.supabase.co/storage/v1/object/public/imagesbucket//ACKbed.jpeg',
+    image_url: 'Images/ACKbed.jpeg',
     available: true,
   },
   {
@@ -55,7 +55,7 @@ const ROOMS_DATA: Room[] = [
     full_board: 4300,
     capacity: 2,
     amenities: ['Desk', 'Wardrobe', 'Private Bathroom', 'Free Wi-Fi', 'TV'],
-    image_url: 'https://jekjzdfuuudzdmdmzyjw.supabase.co/storage/v1/object/public/imagesbucket//ACKbedmain.jpeg',
+    image_url: 'Images/ACKbedmain.jpeg',
     available: true,
   },
   {
@@ -69,7 +69,7 @@ const ROOMS_DATA: Room[] = [
     full_board: 6300,
     capacity: 3,
     amenities: ['Desk', 'Wardrobe', 'Private Bathroom', 'Free Wi-Fi', 'TV'],
-    image_url: 'https://zsayrztvhbduflijzefb.supabase.co/storage/v1/object/public/imagesbucket//ACKbedview.jpeg',
+    image_url: 'Images/ACKbedview.jpeg',
     available: true,
   }
 ];
